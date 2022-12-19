@@ -1,7 +1,9 @@
 # ogameparser
+This repository is for utilizing the ogame API.
 
-Useful:
-s181-us.ogame.gameforge.com/api/players.xml - Updateinterval 1 day
+# Useful API Info
+Information on Players - Updateinterval 1 day
+```s181-us.ogame.gameforge.com/api/players.xml```
 s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=1 - Updateinterval 1 hour
 	Category
 	1		Player
@@ -19,7 +21,7 @@ s181-us.ogame.gameforge.com/api/playerData.xml?id=100262 - Updateinterval 1 week
 	Change ID to the Player ID from s181-us.ogame.gameforge.com/api/players.xml
 s181-us.ogame.gameforge.com/api/alliances.xml - Updateinterval 1 day
 
-Probably useless:
+# Probably Useless:
 s181-us.ogame.gameforge.com/api/localization.xml - Static
 s181-us.ogame.gameforge.com/api/universes.xml - Static
 s181-us.ogame.gameforge.com/api/universe.xml - Updateinterval 1 week (has admin stuff)
