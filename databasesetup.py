@@ -36,23 +36,23 @@ class DatabaseSetup:
             cur = conn.cursor()
             
             #Look through tables in database to see if there is already a table created for this client
+            tableName = 'players'
             SQL = "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename = (%s)"
-            SQLdata = ('banana', )
+            SQLdata = (tableName, )
             cur.execute(SQL, SQLdata)
             tableinfo = cur.fetchone()
-            dbName = 'players'
     
             #If a database isn't created in Supabase then create one. If it is, then don't worry about creating one.
             if tableinfo is None:
                 print("Table for client doesnt exist. Creating now.")
-                cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(dbName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(dbName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;").format(sql.Identifier(dbName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerID\" int8;").format(sql.Identifier(dbName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerName\" text;").format(sql.Identifier(dbName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerStatus\" text;").format(sql.Identifier(dbName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerAlliance\" int8;").format(sql.Identifier(dbName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"fetchDate\" timestamptz;").format(sql.Identifier(dbName)))
+                cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerID\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerName\" text;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerStatus\" text;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerAlliance\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"fetchDate\" timestamptz;").format(sql.Identifier(tableName)))
                 conn.commit()
 
             else:
