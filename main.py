@@ -1,4 +1,5 @@
 from fetchplayers import FetchPlayers
+from fetchalliances import FetchAlliances
 from databasesetup import DatabaseSetup
 import time
 
@@ -8,15 +9,20 @@ if __name__ == '__main__':
     #Test out database connectino
     bot = DatabaseSetup()
     bot.connect()
-    """
-    #Begin Applying
-    bot = LinkedinEasyApply(parameters, browser)
-    bot.login()
-    bot.security_check()
-    bot.start_applying()
-    """
+    
+    #Fetch Players
+    playersTime = time.time()
     bot = FetchPlayers()
     bot.startFetching()
+    playersExecutionTime = (time.time() - playersTime)
+    print('Players execution time in seconds: ' + str(playersExecutionTime))
+    
+    #Fetch Alliances
+    alliancesTime = time.time()
+    bot = FetchAlliances()
+    bot.startFetching()
+    alliancesExecutionTime = (time.time() - alliancesTime)
+    print('Alliances execution time in seconds: ' + str(alliancesExecutionTime))
 
     executionTime = (time.time() - startTime)
-    print('Execution time in seconds: ' + str(executionTime))
+    print('Total fetch execution time in seconds: ' + str(executionTime))

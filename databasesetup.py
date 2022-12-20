@@ -31,7 +31,7 @@ class DatabaseSetup:
             # create a cursor
             cur = conn.cursor()
             
-            #Look through tables in database to see if there is already a table created for this client
+            #Look through tables in database to see if there is already a players table created for this client
             tableName = 'players'
             SQL = "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename = (%s)"
             SQLdata = (tableName, )
@@ -52,7 +52,32 @@ class DatabaseSetup:
                 conn.commit()
 
             else:
-                print("Table for client exists in database. Beginning XML parser.")
+                print("Players table for client exists in database. Beginning alliance table checks.")
+
+            #Look through tables in database to see if there is already a players table created for this client
+            tableName = 'alliances'
+            SQL = "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename = (%s)"
+            SQLdata = (tableName, )
+            cur.execute(SQL, SQLdata)
+            tableinfo = cur.fetchone()
+    
+            #If a database isn't created in Supabase then create one. If it is, then don't worry about creating one.
+            if tableinfo is None:
+                print("Table for client doesnt exist. Creating now.")
+                cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceID\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceName\" text;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceTag\" text;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"founderID\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"foundDate\" integer;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceOpen\" text;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"fetchDate\" timestamptz;").format(sql.Identifier(tableName)))
+                conn.commit()
+            else:
+                print("Players table for client exists in database. Beginning to parse XML.")
+
             # close the communication with the PostgreSQL
             cur.close()
 

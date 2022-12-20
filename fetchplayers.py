@@ -13,8 +13,6 @@ class FetchPlayers:
         # saving the xml file
         with open('output/s181Players.xml', 'wb') as f:
             f.write(resp.content)
-        
-        
 
     def parseXML(self, xmlfile):
         tree = ET.parse(xmlfile)

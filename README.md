@@ -1,24 +1,48 @@
 # ogameparser
 This repository is for utilizing the ogame API.
 
+## ✨ Features
+
+- [x] Database Authentication
+- [x] Players High-Level Information
+- [x] Alliances High-Level Information
+- [x] Number of Members Per Alliance
+- [ ] Player Total Points
+- [ ] Player Ecomony Points
+- [ ] Player Research Points
+- [ ] Player Military Points
+- [ ] Player Military Lost Points
+- [ ] Player Military Built
+- [ ] Player Military Destroyed Points
+- [ ] Player Honor Points
+- [ ] Alliance Total Points
+- [ ] Alliance Ecomony Points
+- [ ] Alliance Research Points
+- [ ] Alliance Military Points
+- [ ] Alliance Military Lost Points
+- [ ] Alliance Military Built
+- [ ] Alliance Military Destroyed Points
+- [ ] Alliance Honor Points
+- [ ] UI to review data (Flutter project)
+
 # Useful API Info
 Information on [Players](https://s181-us.ogame.gameforge.com/api/players.xml) - Update interval 1 day
 
 Information on [High Scores](https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=1) - Update interval 1 hour
 
 ```You can change the category and type for these by changing the values in the URL
-	Category
-	1	Player
-	2	Alliance
-	Type (it goes through 11 so the others 8-11 must be the lifeform stuff)
-	0	Total
-	1	Economy
-	2	Research
-	3	Military
-	4	Military Lost
-	5	Military Built
-	6	Military Destroyed
-	7	Honor 
+	## Category
+	1 | Player
+	2 | Alliance
+	## Type (it goes through 11 so the others 8-11 must be the lifeform stuff)
+	0 | Total
+	1 | Economy
+	2 |	Research
+	3 |	Military
+	4 |	Military Lost
+	5 |	Military Built
+	6 |	Military Destroyed
+	7 |	Honor 
 ```
 
 Information on [Individual Players](https://s181-us.ogame.gameforge.com/api/playerData.xml?id=100262) - Update interval 1 week
