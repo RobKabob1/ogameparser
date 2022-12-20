@@ -1,6 +1,7 @@
 import csv
 import requests
 import xml.etree.ElementTree as ET
+from supabase import create_client, Client
 
 class FetchPlayers:
     def loadXML(self):
@@ -37,13 +38,36 @@ class FetchPlayers:
             playersItems.append(playersDirectory)
         return playersItems
 
-    def savetoCSV(self, playersItems, filename):
+    def writeToDatabase(self, playersItems, filename):
         fields = ['playerID', 'playerName', 'playerStatus', 'playerAlliance']
+    
         # writing to csv file
         with open(filename, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames = fields)
             writer.writeheader()
             writer.writerows(playersItems)
+
+        numberOfPlayers = len(playersItems)
+        count = 1
+        for item in playersItems:
+            #Write out data to Supabase
+            tableName = 'players'
+            supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
+            supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b3VmbXVlZmRrbWloYm1jeXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE1NDQ0MTksImV4cCI6MTk4NzEyMDQxOX0.3ffZfZnbKwPYrJlS-6juaM_tbKCzb8lsDePHI2hndUY"
+            supabase: Client = create_client(supabase_url, supabase_key)
+            main_list = []
+            value = {
+                'playerID': item['playerID'],
+                'playerName': item['playerName'],
+                'playerStatus': item['playerStatus'],
+                'playerAlliance': item['playerAlliance'],
+            }
+            main_list.append(value)
+            data = supabase.table(tableName).insert(main_list).execute()  
+
+            #Keep track of progress because this upload takes a while
+            print("Working on player " + str(count) + " out of " + str(numberOfPlayers))
+            count += 1
 
     def startFetching(self):
         # load from web to update existing xml file
@@ -51,4 +75,4 @@ class FetchPlayers:
         # parse xml file
         items = self.parseXML('output/s181Players.xml')
         # store players items in a csv file
-        self.savetoCSV(items, 'output/s131PlayersResults.csv')
+        self.writeToDatabase(items, 'output/s131PlayersResults.csv')
