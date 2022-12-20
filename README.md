@@ -38,3 +38,12 @@ Information on [Alliances](https://s181-us.ogame.gameforge.com/api/alliances.xml
 
 (https://s181-us.ogame.gameforge.com/api/serverData.xml) - Static
  
+# Setup
+1. Install the requirements using pip with the following command:
+```bash
+pip install -r requirements.txt
+```
+2. Run the script
+```bash
+python3 main.py
+```
