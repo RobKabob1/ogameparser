@@ -2,6 +2,7 @@ import csv
 import requests
 import xml.etree.ElementTree as ET
 from supabase import create_client, Client
+from datetime import date, datetime
 
 class FetchPlayers:
     def loadXML(self):
@@ -12,12 +13,17 @@ class FetchPlayers:
         # saving the xml file
         with open('output/s181Players.xml', 'wb') as f:
             f.write(resp.content)
+        
+        
 
     def parseXML(self, xmlfile):
         tree = ET.parse(xmlfile)
         root = tree.getroot()
         # create empty list for players items
         playersItems = []
+
+        #Get current application run time
+        applicationRunTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         for child in root:
             playersDirectory = {}
@@ -33,13 +39,14 @@ class FetchPlayers:
                 playersDirectory['playerAlliance'] = child.attrib['alliance']
             else:
                 playersDirectory['playerAlliance'] = ''
+            playersDirectory['fetchDate'] = applicationRunTime
 
             # append players dictionary to players items list
             playersItems.append(playersDirectory)
         return playersItems
 
     def writeToDatabase(self, playersItems, filename):
-        fields = ['playerID', 'playerName', 'playerStatus', 'playerAlliance']
+        fields = ['playerID', 'playerName', 'playerStatus', 'playerAlliance', 'fetchDate']
     
         # writing to csv file
         with open(filename, 'w') as csvfile:
@@ -61,6 +68,7 @@ class FetchPlayers:
                 'playerName': item['playerName'],
                 'playerStatus': item['playerStatus'],
                 'playerAlliance': item['playerAlliance'],
+                'fetchDate': item['fetchDate']
             }
             main_list.append(value)
             data = supabase.table(tableName).insert(main_list).execute()  
