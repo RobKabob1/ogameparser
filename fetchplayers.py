@@ -9,7 +9,7 @@ class FetchPlayers:
         # creating HTTP response object from given url
         resp = requests.get(url)
         # saving the xml file
-        with open('s181Players.xml', 'wb') as f:
+        with open('output/s181Players.xml', 'wb') as f:
             f.write(resp.content)
 
     def parseXML(self, xmlfile):
@@ -49,6 +49,6 @@ class FetchPlayers:
         # load from web to update existing xml file
         self.loadXML()
         # parse xml file
-        items = self.parseXML('s181Players.xml')
+        items = self.parseXML('output/s181Players.xml')
         # store players items in a csv file
-        self.savetoCSV(items, 's131PlayersResults.csv')
+        self.savetoCSV(items, 'output/s131PlayersResults.csv')

@@ -4,10 +4,8 @@ from configparser import ConfigParser
 
 class DatabaseSetup:
     def config(self, filename='database.ini', section='postgresql'):
-        # create a parser
+        # create a parser & read config file
         parser = ConfigParser()
-
-        # read config file
         parser.read(filename)
 
         # get section, default to postgresql
@@ -25,10 +23,8 @@ class DatabaseSetup:
         """ Connect to the PostgreSQL database server """
         conn = None
         try:
-            # read connection parameters
+            # read connection parameters & connect to PostgreSQL server
             params = self.config()
-
-            # connect to the PostgreSQL server
             print('Connecting to the PostgreSQL database...')
             conn = psycopg.connect(**params)
             
@@ -57,7 +53,6 @@ class DatabaseSetup:
 
             else:
                 print("Table for client exists in database. Beginning XML parser.")
-
             # close the communication with the PostgreSQL
             cur.close()
 
