@@ -47,10 +47,11 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerID\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerName\" text;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerStatus\" text;").format(sql.Identifier(tableName)))
-                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerAlliance\" text;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerAlliance\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerTotalPosition\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerTotalScore\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"fetchDate\" timestamptz;").format(sql.Identifier(tableName)))
                 conn.commit()
-
             else:
                 print("Players table for client exists in database. Beginning alliance table checks.")
 

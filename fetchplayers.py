@@ -6,52 +6,66 @@ from datetime import date, datetime
 
 class FetchPlayers:
     def loadXML(self):
-        # url of feed
+        # creating HTTP response object from players high-level url and saving the xml file
         url = 'https://s181-us.ogame.gameforge.com/api/players.xml'
-        # creating HTTP response object from given url
         resp = requests.get(url)
-        # saving the xml file
-        with open('output/s181Players.xml', 'wb') as f:
+        with open('output/s181PlayersHighLevel.xml', 'wb') as f:
             f.write(resp.content)
 
-    def parseXML(self, xmlfile):
-        tree = ET.parse(xmlfile)
-        root = tree.getroot()
-        # create empty list for players items
-        playersItems = []
+        # creating HTTP response object from players total url and saving the xml file
+        url = 'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=0'
+        resp = requests.get(url)
+        with open('output/s181PlayersTotal.xml', 'wb') as f:
+            f.write(resp.content)
 
-        #Get current application run time
+    def parseXML(self, highLevelXML, totalScoreXML):
+        #Inventorying high level items
+        tree = ET.parse(highLevelXML)
+        root = tree.getroot()
+        playersItems = []
         applicationRunTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
         for child in root:
             playersDirectory = {}
-
-            #get each attribute from players XML
             playersDirectory['playerID'] = child.attrib['id']
             playersDirectory['playerName'] = child.attrib['name']
             if 'status' in child.attrib:
                 playersDirectory['playerStatus'] = child.attrib['status']
             else:
-                playersDirectory['playerStatus'] = ''
+                playersDirectory['playerStatus'] = None
             if 'alliance' in child.attrib:
                 playersDirectory['playerAlliance'] = child.attrib['alliance']
             else:
-                playersDirectory['playerAlliance'] = ''
+                playersDirectory['playerAlliance'] = None
             playersDirectory['fetchDate'] = applicationRunTime
-
-            # append players dictionary to players items list
+            #Create Null values that we can update later. Null values are required for our Supabase insert.
+            playersDirectory['playerTotalPosition'] = None
+            playersDirectory['playerTotalScore'] = None
             playersItems.append(playersDirectory)
+
+        #Inventorying total score items
+        tree = ET.parse(totalScoreXML)
+        root = tree.getroot()
+
+        for child in root:
+            for dict in playersItems:
+                if dict.get('playerID') == child.attrib['id']:
+                    positionDictUpdate = {'playerTotalPosition': child.attrib['position']}
+                    dict.update(positionDictUpdate)
+                    scoreDictUpdate = {'playerTotalScore': child.attrib['score']}
+                    dict.update(scoreDictUpdate)
+
         return playersItems
 
     def writeToDatabase(self, playersItems, filename):
-        fields = ['playerID', 'playerName', 'playerStatus', 'playerAlliance', 'fetchDate']
+        fields = ['playerID', 'playerName', 'playerStatus', 'playerAlliance', 'fetchDate', 'playerTotalPosition', 'playerTotalScore']
     
         # writing to csv file
         with open(filename, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames = fields)
             writer.writeheader()
             writer.writerows(playersItems)
-
+        
         numberOfPlayers = len(playersItems)
         count = 1
         for item in playersItems:
@@ -66,7 +80,9 @@ class FetchPlayers:
                 'playerName': item['playerName'],
                 'playerStatus': item['playerStatus'],
                 'playerAlliance': item['playerAlliance'],
-                'fetchDate': item['fetchDate']
+                'fetchDate': item['fetchDate'],
+                'playerTotalPosition': item['playerTotalPosition'],
+                'playerTotalScore': item['playerTotalScore']
             }
             main_list.append(value)
             data = supabase.table(tableName).insert(main_list).execute()  
@@ -74,11 +90,11 @@ class FetchPlayers:
             #Keep track of progress because this upload takes a while
             print("Working on player " + str(count) + " out of " + str(numberOfPlayers))
             count += 1
-
+        
     def startFetching(self):
         # load from web to update existing xml file
         self.loadXML()
         # parse xml file
-        items = self.parseXML('output/s181Players.xml')
+        items = self.parseXML('output/s181PlayersHighLevel.xml', 'output/s181PlayersTotal.xml')
         # store players items in a csv file
         self.writeToDatabase(items, 'output/s131PlayersResults.csv')
