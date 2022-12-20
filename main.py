@@ -1,12 +1,11 @@
 from fetchplayers import FetchPlayers
+from databasesetup import DatabaseSetup
 
 if __name__ == '__main__':
-    
-    """
-    #Make table for new user if it doesnt exist
-    bot = DatabaseSetup(parameters)
+    #Test out database connectino
+    bot = DatabaseSetup()
     bot.connect()
-
+    """
     #Begin Applying
     bot = LinkedinEasyApply(parameters, browser)
     bot.login()
