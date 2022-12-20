@@ -1,5 +1,8 @@
 from fetchplayers import FetchPlayers
 from databasesetup import DatabaseSetup
+import time
+
+startTime = time.time()
 
 if __name__ == '__main__':
     #Test out database connectino
@@ -14,3 +17,6 @@ if __name__ == '__main__':
     """
     bot = FetchPlayers()
     bot.startFetching()
+
+    executionTime = (time.time() - startTime)
+    print('Execution time in seconds: ' + str(executionTime))
