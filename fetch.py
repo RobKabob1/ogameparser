@@ -5,7 +5,6 @@ import requests
 import xml.etree.ElementTree as ET
 
 def loadRSS():
-
     # url of rss feed
     url = 'https://s181-us.ogame.gameforge.com/api/players.xml'
     # creating HTTP response object from given url
@@ -19,14 +18,14 @@ def parseXML(xmlfile):
     tree = ET.parse(xmlfile)
     # get root element
     root = tree.getroot()
-    # create empty list for news items
+    # create empty list for players items
     playersItems = []
-
     
     for child in root:
-        # empty players dictionary
+        # create empty players dictionary
         playersDirectory = {}
 
+        #get each attribute from players XML
         playersDirectory['playerID'] = child.attrib['id']
         playersDirectory['playerName'] = child.attrib['name']
         if 'status' in child.attrib:
@@ -38,9 +37,9 @@ def parseXML(xmlfile):
         else:
             playersDirectory['playerAlliance'] = ''
 
-        # append news dictionary to news items list
+        # append players dictionary to players items list
         playersItems.append(playersDirectory)
-    # return news items list
+    # return players items list
     return playersItems
 
 def savetoCSV(playersItems, filename):
@@ -56,11 +55,11 @@ def savetoCSV(playersItems, filename):
         writer.writerows(playersItems)
 
 def main():
-    # load rss from web to update existing xml file
+    # load from web to update existing xml file
     loadRSS()
     # parse xml file
     items = parseXML('s181Players.xml')
-    # store news items in a csv file
+    # store players items in a csv file
     savetoCSV(items, 's131PlayersResults.csv')
 
 if __name__ == "__main__":
