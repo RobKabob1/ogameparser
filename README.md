@@ -6,7 +6,7 @@ This repository is for utilizing the ogame API.
 - [x] Database Authentication
 - [x] Players High-Level Information
 - [x] Alliances High-Level Information
-- [ ] Player Total, Economy, Research, Military, Military Lost, Military Built, Military Destroyed, and Honor Points
+- [x] Player Total, Economy, Research, Military, Military Lost, Military Built, Military Destroyed, and Honor Points
 - [ ] Player Planets
 - [ ] Alliance Total, Economy, Research, Military, Military Lost, Military Built, Military Destroyed, and Honor Points
 - [ ] Number of Members Per Alliance

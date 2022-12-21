@@ -6,21 +6,41 @@ from datetime import date, datetime
 
 class FetchPlayers:
     def loadXML(self):
-        # creating HTTP response object from players high-level url and saving the xml file
-        url = 'https://s181-us.ogame.gameforge.com/api/players.xml'
-        resp = requests.get(url)
-        with open('output/s181PlayersHighLevel.xml', 'wb') as f:
-            f.write(resp.content)
+        #Inventory the list of URLs to go through
+        urls = {
+            'playerHighLevel':'https://s181-us.ogame.gameforge.com/api/players.xml',
+            'playerTotal':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=0',
+            'playerEconomy':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=1',
+            'playerResearch':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=2',
+            'playerMilitaryHighLevel':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=3',
+            'playerMilitaryLost':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=4',
+            'playerMilitaryBuilt':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=5',
+            'playerMilitaryDestroyed':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=6',
+            'playerMilitaryHonor':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=7',
+            'playerLifeformHighLevel':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=8',
+            'playerLifeformEconomy':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=9',
+            'playerLifeformTechnology':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=10',
+            'playerLifeformDiscoveries':'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=11'
+        }
+        
+        #Grab the XML files for each of the URLs and return the XML files for parsing later
+        listOfXMLs = {}
+        for name, url in urls.items():
+            resp = requests.get(url)
+            outFile = "output/s181" + name + ".xml"
+            listOfXMLs[name] = outFile
+            with open(outFile, 'wb') as f:
+                f.write(resp.content)
 
-        # creating HTTP response object from players total url and saving the xml file
-        url = 'https://s181-us.ogame.gameforge.com/api/highscore.xml?category=1&type=0'
-        resp = requests.get(url)
-        with open('output/s181PlayersTotal.xml', 'wb') as f:
-            f.write(resp.content)
+        return listOfXMLs
 
-    def parseXML(self, highLevelXML, totalScoreXML):
+    def parseXML(
+        self,
+        XMLList
+        ):
+
         #Inventorying high level items
-        tree = ET.parse(highLevelXML)
+        tree = ET.parse(XMLList.get('playerHighLevel'))
         root = tree.getroot()
         playersItems = []
         applicationRunTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -38,27 +58,92 @@ class FetchPlayers:
             else:
                 playersDirectory['playerAlliance'] = None
             playersDirectory['fetchDate'] = applicationRunTime
+
             #Create Null values that we can update later. Null values are required for our Supabase insert.
             playersDirectory['playerTotalPosition'] = None
             playersDirectory['playerTotalScore'] = None
+            playersDirectory['playerEconomyPosition'] = None
+            playersDirectory['playerEconomyScore'] = None
+            playersDirectory['playerResearchPosition'] = None
+            playersDirectory['playerResearchScore'] = None
+            playersDirectory['playerMilitaryHighLevelPosition'] = None
+            playersDirectory['playerMilitaryHighLevelScore'] = None
+            playersDirectory['playerMilitaryLostPosition'] = None
+            playersDirectory['playerMilitaryLostScore'] = None
+            playersDirectory['playerMilitaryBuiltPosition'] = None
+            playersDirectory['playerMilitaryBuiltScore'] = None
+            playersDirectory['playerMilitaryDestroyedPosition'] = None
+            playersDirectory['playerMilitaryDestroyedScore'] = None
+            playersDirectory['playerMilitaryHonorPosition'] = None
+            playersDirectory['playerMilitaryHonorScore'] = None
+            playersDirectory['playerLifeformHighLevelPosition'] = None
+            playersDirectory['playerLifeformHighLevelScore'] = None
+            playersDirectory['playerLifeformEconomyPosition'] = None
+            playersDirectory['playerLifeformEconomyScore'] = None
+            playersDirectory['playerLifeformTechnologyPosition'] = None
+            playersDirectory['playerLifeformTechnologyScore'] = None
+            playersDirectory['playerLifeformDiscoveriesPosition'] = None
+            playersDirectory['playerLifeformDiscoveriesScore'] = None
+                        
             playersItems.append(playersDirectory)
+        
+        #remove the HighLevelXML before we iterate on each of them below
+        XMLList.pop('playerHighLevel')
 
-        #Inventorying total score items
-        tree = ET.parse(totalScoreXML)
-        root = tree.getroot()
+        #Loop through the rest of the times
+        print("1")
+        print(playersItems)
+        
+        for XMLName, XMLLocation in XMLList.items():
+            #Inventorying all individual player score and position items
+            tree = ET.parse(XMLLocation)
+            root = tree.getroot()
 
-        for child in root:
-            for dict in playersItems:
-                if dict.get('playerID') == child.attrib['id']:
-                    positionDictUpdate = {'playerTotalPosition': child.attrib['position']}
-                    dict.update(positionDictUpdate)
-                    scoreDictUpdate = {'playerTotalScore': child.attrib['score']}
-                    dict.update(scoreDictUpdate)
+            for child in root:
+                for dict in playersItems:
+                    if dict.get('playerID') == child.attrib['id']:
+                        positionName = XMLName + "Position"
+                        positionDictUpdate = {positionName: child.attrib['position']}
+                        dict.update(positionDictUpdate)
+                        positionName = XMLName + "Score"
+                        scoreDictUpdate = {positionName: child.attrib['score']}
+                        dict.update(scoreDictUpdate)
 
+        #return all data
         return playersItems
 
     def writeToDatabase(self, playersItems, filename):
-        fields = ['playerID', 'playerName', 'playerStatus', 'playerAlliance', 'fetchDate', 'playerTotalPosition', 'playerTotalScore']
+        fields = [
+            'playerID', 
+            'playerName', 
+            'playerStatus', 
+            'playerAlliance', 
+            'fetchDate', 
+            'playerTotalPosition',
+            'playerTotalScore',
+            'playerEconomyPosition',
+            'playerEconomyScore',
+            'playerResearchPosition',
+            'playerResearchScore',
+            'playerMilitaryHighLevelPosition',
+            'playerMilitaryHighLevelScore',
+            'playerMilitaryLostPosition',
+            'playerMilitaryLostScore',
+            'playerMilitaryBuiltPosition',
+            'playerMilitaryBuiltScore',
+            'playerMilitaryDestroyedPosition',
+            'playerMilitaryDestroyedScore',
+            'playerMilitaryHonorPosition',
+            'playerMilitaryHonorScore',
+            'playerLifeformHighLevelPosition',
+            'playerLifeformHighLevelScore',
+            'playerLifeformEconomyPosition',
+            'playerLifeformEconomyScore',
+            'playerLifeformTechnologyPosition',
+            'playerLifeformTechnologyScore',
+            'playerLifeformDiscoveriesPosition',
+            'playerLifeformDiscoveriesScore',           
+            ]
     
         # writing to csv file
         with open(filename, 'w') as csvfile:
@@ -82,7 +167,29 @@ class FetchPlayers:
                 'playerAlliance': item['playerAlliance'],
                 'fetchDate': item['fetchDate'],
                 'playerTotalPosition': item['playerTotalPosition'],
-                'playerTotalScore': item['playerTotalScore']
+                'playerTotalScore': item['playerTotalScore'],
+                'playerEconomyPosition': item['playerEconomyPosition'],
+                'playerEconomyScore': item['playerEconomyScore'],
+                'playerResearchPosition': item['playerResearchPosition'],
+                'playerResearchScore': item['playerResearchScore'],
+                'playerMilitaryHighLevelPosition': item['playerMilitaryHighLevelPosition'],
+                'playerMilitaryHighLevelScore': item['playerMilitaryHighLevelScore'],
+                'playerMilitaryLostPosition': item['playerMilitaryLostPosition'],
+                'playerMilitaryLostScore': item['playerMilitaryLostScore'],
+                'playerMilitaryBuiltPosition': item['playerMilitaryBuiltPosition'],
+                'playerMilitaryBuiltScore': item['playerMilitaryBuiltScore'],
+                'playerMilitaryDestroyedPosition': item['playerMilitaryDestroyedPosition'],
+                'playerMilitaryDestroyedScore': item['playerMilitaryDestroyedScore'],
+                'playerMilitaryHonorPosition': item['playerMilitaryHonorPosition'],
+                'playerMilitaryHonorScore': item['playerMilitaryHonorScore'],
+                'playerLifeformHighLevelPosition': item['playerLifeformHighLevelPosition'],
+                'playerLifeformHighLevelScore': item['playerLifeformHighLevelScore'],
+                'playerLifeformEconomyPosition': item['playerLifeformEconomyPosition'],
+                'playerLifeformEconomyScore': item['playerLifeformEconomyScore'],
+                'playerLifeformTechnologyPosition': item['playerLifeformTechnologyPosition'],
+                'playerLifeformTechnologyScore': item['playerLifeformTechnologyScore'],
+                'playerLifeformDiscoveriesPosition': item['playerLifeformDiscoveriesPosition'],
+                'playerLifeformDiscoveriesScore': item['playerLifeformDiscoveriesScore']           
             }
             main_list.append(value)
             data = supabase.table(tableName).insert(main_list).execute()  
@@ -93,8 +200,10 @@ class FetchPlayers:
         
     def startFetching(self):
         # load from web to update existing xml file
-        self.loadXML()
+        XMLsToParse = self.loadXML()
         # parse xml file
-        items = self.parseXML('output/s181PlayersHighLevel.xml', 'output/s181PlayersTotal.xml')
+        items = self.parseXML(XMLsToParse)
+        
         # store players items in a csv file
         self.writeToDatabase(items, 'output/s131PlayersResults.csv')
+        
