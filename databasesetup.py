@@ -57,6 +57,7 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerResearchScore\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerMilitaryHighLevelPosition\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerMilitaryHighLevelScore\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerMilitaryHighLevelShips\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerMilitaryLostPosition\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerMilitaryLostScore\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerMilitaryBuiltPosition\" int8;").format(sql.Identifier(tableName)))

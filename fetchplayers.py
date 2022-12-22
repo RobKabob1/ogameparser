@@ -1,5 +1,4 @@
-import csv
-import requests
+import csv, requests, os
 import xml.etree.ElementTree as ET
 from supabase import create_client, Client
 from datetime import date, datetime
@@ -64,6 +63,7 @@ class FetchPlayers:
             playersDirectory['playerResearchScore'] = None
             playersDirectory['playerMilitaryHighLevelPosition'] = None
             playersDirectory['playerMilitaryHighLevelScore'] = None
+            playersDirectory['playerMilitaryHighLevelShips'] = None
             playersDirectory['playerMilitaryLostPosition'] = None
             playersDirectory['playerMilitaryLostScore'] = None
             playersDirectory['playerMilitaryBuiltPosition'] = None
@@ -101,6 +101,10 @@ class FetchPlayers:
                         positionName = XMLName + "Score"
                         scoreDictUpdate = {positionName: child.attrib['score']}
                         dict.update(scoreDictUpdate)
+                        if 'ships' in child.attrib:
+                            positionName = XMLName + "Ships"
+                            scoreDictUpdate = {positionName: child.attrib['ships']}
+                            dict.update(scoreDictUpdate)
 
         #return all data
         return playersItems
@@ -120,6 +124,7 @@ class FetchPlayers:
             'playerResearchScore',
             'playerMilitaryHighLevelPosition',
             'playerMilitaryHighLevelScore',
+            'playerMilitaryHighLevelShips',
             'playerMilitaryLostPosition',
             'playerMilitaryLostScore',
             'playerMilitaryBuiltPosition',
@@ -138,11 +143,13 @@ class FetchPlayers:
             'playerLifeformDiscoveriesScore',           
             ]
     
+        """
         # writing to csv file
         with open(filename, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames = fields)
             writer.writeheader()
             writer.writerows(playersItems)
+        """
         
         numberOfPlayers = len(playersItems)
         count = 1
@@ -167,6 +174,7 @@ class FetchPlayers:
                 'playerResearchScore': item['playerResearchScore'],
                 'playerMilitaryHighLevelPosition': item['playerMilitaryHighLevelPosition'],
                 'playerMilitaryHighLevelScore': item['playerMilitaryHighLevelScore'],
+                'playerMilitaryHighLevelShips': item['playerMilitaryHighLevelShips'],
                 'playerMilitaryLostPosition': item['playerMilitaryLostPosition'],
                 'playerMilitaryLostScore': item['playerMilitaryLostScore'],
                 'playerMilitaryBuiltPosition': item['playerMilitaryBuiltPosition'],
@@ -198,4 +206,7 @@ class FetchPlayers:
         items = self.parseXML(XMLsToParse)
         # store players items in a csv file
         self.writeToDatabase(items, 'output/s131PlayersResults.csv')
+        # delete working files
+        for file in XMLsToParse.values():
+            os.remove(file)
         

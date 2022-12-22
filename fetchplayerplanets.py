@@ -100,11 +100,13 @@ class FetchPlayerPlanets:
             'fetchDate'         
             ]
     
+        """
         # writing to csv file
         with open(filename, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames = fields)
             writer.writeheader()
             writer.writerows(planetItems)
+        """
         
         numberOfPlayers = len(planetItems)
         writingCount = 1

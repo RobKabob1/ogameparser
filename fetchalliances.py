@@ -1,5 +1,4 @@
-import csv
-import requests
+import csv, requests, os
 import xml.etree.ElementTree as ET
 from supabase import create_client, Client
 from datetime import date, datetime
@@ -157,12 +156,14 @@ class FetchAlliances:
             'allianceLifeformDiscoveriesScore',           
             ]
     
+        """
         # writing to csv file
         with open(filename, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames = fields)
             writer.writeheader()
             writer.writerows(alliancesItems)
-        
+        """
+
         numberOfalliances = len(alliancesItems)
         count = 1
         for item in alliancesItems:
@@ -221,3 +222,7 @@ class FetchAlliances:
         items = self.parseXML(XMLsToParse)
         # store alliances items in a csv file
         self.writeToDatabase(items, 'output/s131AlliancesResults.csv')
+        # delete working files
+        for file in XMLsToParse.values():
+            os.remove(file)
+        
