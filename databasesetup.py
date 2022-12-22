@@ -97,6 +97,8 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"founderID\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"foundDate\" integer;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceOpen\" text;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"alliancePlayerCount\" int8;").format(sql.Identifier(tableName)))
+                cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceLogo\" text;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"fetchDate\" timestamptz;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceTotalPosition\" int8;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceTotalScore\" int8;").format(sql.Identifier(tableName)))

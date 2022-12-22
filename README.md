@@ -9,7 +9,7 @@ This repository is for utilizing the ogame API.
 - [x] Player Total, Economy, Research, Military, Military Lost, Military Built, Military Destroyed, and Honor Points
 - [x] Player Planets
 - [x] Alliance Total, Economy, Research, Military, Military Lost, Military Built, Military Destroyed, and Honor Points
-- [ ] Number of Members Per Alliance
+- [x] Number of Members Per Alliance
 - [ ] UI to review data (Flutter project)
 
 # Useful API Info

@@ -60,6 +60,14 @@ class FetchAlliances:
                 alliancesDirectory['allianceOpen'] = child.attrib['open']
             else:
                 alliancesDirectory['allianceOpen'] = None
+            if 'logo' in child.attrib:
+                alliancesDirectory['allianceLogo'] = child.attrib['logo']
+            else:
+                alliancesDirectory['allianceLogo'] = None
+            alliancePlayerCount = 0
+            for alliancePlayer in child:
+                alliancePlayerCount += 1
+            alliancesDirectory['alliancePlayerCount'] = alliancePlayerCount   
             alliancesDirectory['fetchDate'] = applicationRunTime
 
             #Create Null values that we can update later. Null values are required for our Supabase insert.
@@ -120,6 +128,8 @@ class FetchAlliances:
             'founderID', 
             'foundDate', 
             'allianceOpen',
+            'alliancePlayerCount',
+            'allianceLogo',
             'fetchDate', 
             'allianceTotalPosition',
             'allianceTotalScore',
@@ -169,6 +179,8 @@ class FetchAlliances:
                 'founderID': item['founderID'],
                 'foundDate': item['foundDate'],
                 'allianceOpen': item['allianceOpen'],
+                'alliancePlayerCount': item['alliancePlayerCount'],
+                'allianceLogo':item['allianceLogo'],
                 'fetchDate': item['fetchDate'],
                 'allianceTotalPosition': item['allianceTotalPosition'],
                 'allianceTotalScore': item['allianceTotalScore'],
