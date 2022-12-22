@@ -34,11 +34,7 @@ class FetchPlayers:
 
         return listOfXMLs
 
-    def parseXML(
-        self,
-        XMLList
-        ):
-
+    def parseXML(self, XMLList):
         #Inventorying high level items
         tree = ET.parse(XMLList.get('playerHighLevel'))
         root = tree.getroot()
@@ -90,12 +86,9 @@ class FetchPlayers:
         #remove the HighLevelXML before we iterate on each of them below
         XMLList.pop('playerHighLevel')
 
-        #Loop through the rest of the times
-        print("1")
-        print(playersItems)
-        
+        #Loop through the rest of the items containing all individual player score and position items
         for XMLName, XMLLocation in XMLList.items():
-            #Inventorying all individual player score and position items
+            
             tree = ET.parse(XMLLocation)
             root = tree.getroot()
 
@@ -203,7 +196,6 @@ class FetchPlayers:
         XMLsToParse = self.loadXML()
         # parse xml file
         items = self.parseXML(XMLsToParse)
-        
         # store players items in a csv file
         self.writeToDatabase(items, 'output/s131PlayersResults.csv')
         
