@@ -131,7 +131,7 @@ class DatabaseSetup:
                 print(tableName + " table for client exists in database. Beginning next table check.")
 
             #Look through tables in database to see if there is already a planets table created for this client
-            tableName = 'planets'
+            tableName = 'planetsDaily'
             SQL = "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename = (%s)"
             SQLdata = (tableName, )
             cur.execute(SQL, SQLdata)
@@ -175,7 +175,10 @@ class DatabaseSetup:
  
                 conn.commit()
             else:
-                print(tableName + " table for client exists in database. Beginning next table check.")
+                print(tableName + " table for client exists in database. Removing rows and beginning next table check.")
+                SQL = "DELETE FROM public.\"%s\"" % tableName
+                cur.execute(SQL)
+                conn.commit()
 
             # close the communication with the PostgreSQL
             cur.close()

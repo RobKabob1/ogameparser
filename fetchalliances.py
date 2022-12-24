@@ -5,14 +5,7 @@ from datetime import date, datetime
 
 class FetchAlliances:
     def loadXML(self):
-        # url of feed
-        url = 'https://s181-us.ogame.gameforge.com/api/alliances.xml'
-        # creating HTTP response object from given url
-        resp = requests.get(url)
-        # saving the xml file
-        with open('output/s181Alliances.xml', 'wb') as f:
-            f.write(resp.content)
-
+        print("Grabbing XML information from API")
         #Inventory the list of URLs to go through
         urls = {
             'allianceHighLevel':'https://s181-us.ogame.gameforge.com/api/alliances.xml',
@@ -42,6 +35,7 @@ class FetchAlliances:
         return listOfXMLs
 
     def parseXML(self, XMLList):
+        print("Parsing XMLs")
         #Inventorying high level items
         tree = ET.parse(XMLList.get('allianceHighLevel'))
         root = tree.getroot()
@@ -120,6 +114,7 @@ class FetchAlliances:
         return alliancesItems
 
     def writeToDatabase(self, alliancesItems, filename):
+        print("Writing Data to Supabase")
         fields = [
             'allianceID', 
             'allianceName', 
@@ -163,16 +158,13 @@ class FetchAlliances:
             writer.writeheader()
             writer.writerows(alliancesItems)
         """
-
-        numberOfalliances = len(alliancesItems)
-        count = 1
+        #Write out data to Supabase
+        tableName = 'alliances'
+        supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
+        supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b3VmbXVlZmRrbWloYm1jeXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE1NDQ0MTksImV4cCI6MTk4NzEyMDQxOX0.3ffZfZnbKwPYrJlS-6juaM_tbKCzb8lsDePHI2hndUY"
+        supabase: Client = create_client(supabase_url, supabase_key)
+        main_list = []
         for item in alliancesItems:
-            #Write out data to Supabase
-            tableName = 'alliances'
-            supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
-            supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b3VmbXVlZmRrbWloYm1jeXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE1NDQ0MTksImV4cCI6MTk4NzEyMDQxOX0.3ffZfZnbKwPYrJlS-6juaM_tbKCzb8lsDePHI2hndUY"
-            supabase: Client = create_client(supabase_url, supabase_key)
-            main_list = []
             value = {
                 'allianceID': item['allianceID'],
                 'allianceName': item['allianceName'],
@@ -209,11 +201,8 @@ class FetchAlliances:
                 'allianceLifeformDiscoveriesScore': item['allianceLifeformDiscoveriesScore']           
             }
             main_list.append(value)
-            data = supabase.table(tableName).insert(main_list).execute()  
-
-            #Keep track of progress because this upload takes a while
-            print("Working on alliance " + str(count) + " out of " + str(numberOfalliances))
-            count += 1
+ 
+        data = supabase.table(tableName).insert(main_list).execute()  
 
     def startFetching(self):
         # load from web to update existing xml file

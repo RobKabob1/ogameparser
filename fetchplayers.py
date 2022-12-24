@@ -5,6 +5,7 @@ from datetime import date, datetime
 
 class FetchPlayers:
     def loadXML(self):
+        print("Grabbing XML information from API")
         #Inventory the list of URLs to go through
         urls = {
             'playerHighLevel':'https://s181-us.ogame.gameforge.com/api/players.xml',
@@ -34,6 +35,7 @@ class FetchPlayers:
         return listOfXMLs
 
     def parseXML(self, XMLList):
+        print("Parsing XMLs")
         #Inventorying high level items
         tree = ET.parse(XMLList.get('playerHighLevel'))
         root = tree.getroot()
@@ -110,6 +112,7 @@ class FetchPlayers:
         return playersItems
 
     def writeToDatabase(self, playersItems, filename):
+        print("Writing Data to Supabase")
         fields = [
             'playerID', 
             'playerName', 
@@ -151,15 +154,13 @@ class FetchPlayers:
             writer.writerows(playersItems)
         """
         
-        numberOfPlayers = len(playersItems)
-        count = 1
+        #Write out data to Supabase
+        tableName = 'players'
+        supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
+        supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b3VmbXVlZmRrbWloYm1jeXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE1NDQ0MTksImV4cCI6MTk4NzEyMDQxOX0.3ffZfZnbKwPYrJlS-6juaM_tbKCzb8lsDePHI2hndUY"
+        supabase: Client = create_client(supabase_url, supabase_key)
+        main_list = []
         for item in playersItems:
-            #Write out data to Supabase
-            tableName = 'players'
-            supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
-            supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b3VmbXVlZmRrbWloYm1jeXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE1NDQ0MTksImV4cCI6MTk4NzEyMDQxOX0.3ffZfZnbKwPYrJlS-6juaM_tbKCzb8lsDePHI2hndUY"
-            supabase: Client = create_client(supabase_url, supabase_key)
-            main_list = []
             value = {
                 'playerID': item['playerID'],
                 'playerName': item['playerName'],
@@ -193,11 +194,8 @@ class FetchPlayers:
                 'playerLifeformDiscoveriesScore': item['playerLifeformDiscoveriesScore']           
             }
             main_list.append(value)
-            data = supabase.table(tableName).insert(main_list).execute()  
-
-            #Keep track of progress because this upload takes a while
-            print("Working on player " + str(count) + " out of " + str(numberOfPlayers))
-            count += 1
+        
+        data = supabase.table(tableName).insert(main_list).execute()  
         
     def startFetching(self):
         # load from web to update existing xml file

@@ -11,19 +11,13 @@ if __name__ == '__main__':
     bot = DatabaseSetup()
     bot.connect()
     
+    """
     #Fetch Players
     playersTime = time.time()
     bot = FetchPlayers()
     bot.startFetching()
     playersExecutionTime = (time.time() - playersTime)
     print('Players execution time in seconds: ' + str(playersExecutionTime))
-    
-    #Fetch Player Planets
-    planetsTime = time.time()
-    bot = FetchPlayerPlanets()
-    bot.startFetching()
-    planetsExecutionTime = (time.time() - planetsTime)
-    print('Planets execution time in seconds: ' + str(planetsExecutionTime))
     
     #Fetch Alliances
     alliancesTime = time.time()
@@ -32,5 +26,14 @@ if __name__ == '__main__':
     alliancesExecutionTime = (time.time() - alliancesTime)
     print('Alliances execution time in seconds: ' + str(alliancesExecutionTime))
 
+    #Fetch Player Planets
+    planetsTime = time.time()
+    bot = FetchPlayerPlanets()
+    bot.startFetching()
+    planetsExecutionTime = (time.time() - planetsTime)
+    print('Planets execution time in seconds: ' + str(planetsExecutionTime))
+    """
     executionTime = (time.time() - startTime)
     print('Total fetch execution time in seconds: ' + str(executionTime))
+
+    print("script ran")

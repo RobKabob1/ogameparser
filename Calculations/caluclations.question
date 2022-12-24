@@ -1,0 +1,11 @@
+total = 51343
+economy = 16608
+research = 4398
+military = 35466
+
+51343 = a + b + c + d + e + f
+16608 = a + b + 0.5c + 0.5d
+4398 = e
+35466 = b + 0.5c + 0.5d + f
+
+What are the values of a, b, c, d, e, and f?
