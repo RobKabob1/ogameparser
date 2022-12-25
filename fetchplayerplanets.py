@@ -11,12 +11,13 @@ class FetchPlayerPlanets:
         supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
         supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b3VmbXVlZmRrbWloYm1jeXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE1NDQ0MTksImV4cCI6MTk4NzEyMDQxOX0.3ffZfZnbKwPYrJlS-6juaM_tbKCzb8lsDePHI2hndUY"
         supabase: Client = create_client(supabase_url, supabase_key)
-        playerIDDict = supabase.table("players").select("playerID").execute()
+        queryRunTime = datetime.now().strftime("%Y-%m-%d 00:00:00")
+        playerIDDict = supabase.table("players").select("playerID").gte('fetchDate', queryRunTime).execute()
 
         return playerIDDict.data           
     
     def searchXMLs(self, playersToParse):
-        print("Parsing player information and grabbing XML information from API")
+        print("Parsing Planet information from players and grabbing XML information from API")
         #loop through each URL based on ID (https://s181-us.ogame.gameforge.com/api/playerData.xml?id=100654) and store those planet values (16 planets)
         URL = 'https://s181-us.ogame.gameforge.com/api/playerData.xml?id='
         planetItems = []
@@ -111,7 +112,7 @@ class FetchPlayerPlanets:
         """
         
         #Write out data to Supabase
-        tableName = 'planetsDaily'
+        tableName = 'planets'
         supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
         supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1b3VmbXVlZmRrbWloYm1jeXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE1NDQ0MTksImV4cCI6MTk4NzEyMDQxOX0.3ffZfZnbKwPYrJlS-6juaM_tbKCzb8lsDePHI2hndUY"
         supabase: Client = create_client(supabase_url, supabase_key)

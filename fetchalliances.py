@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 class FetchAlliances:
     def loadXML(self):
-        print("Grabbing XML information from API")
+        print("Grabbing Alliance XML information from API")
         #Inventory the list of URLs to go through
         urls = {
             'allianceHighLevel':'https://s181-us.ogame.gameforge.com/api/alliances.xml',
@@ -91,7 +91,8 @@ class FetchAlliances:
                         
             alliancesItems.append(alliancesDirectory)
         
-        #remove the HighLevelXML before we iterate on each of them below
+        #remove the HighLevelXML item and file before we iterate on each of them below
+        os.remove(XMLList['allianceHighLevel'])
         XMLList.pop('allianceHighLevel')
 
         #Loop through the rest of the items containing all individual alliance score and position items
@@ -109,6 +110,10 @@ class FetchAlliances:
                         positionName = XMLName + "Score"
                         scoreDictUpdate = {positionName: child.attrib['score']}
                         dict.update(scoreDictUpdate)
+
+        # delete working files
+        for file in XMLList.values():
+            os.remove(file)
 
         #return all data
         return alliancesItems
@@ -211,7 +216,4 @@ class FetchAlliances:
         items = self.parseXML(XMLsToParse)
         # store alliances items in a csv file
         self.writeToDatabase(items, 'output/s131AlliancesResults.csv')
-        # delete working files
-        for file in XMLsToParse.values():
-            os.remove(file)
         

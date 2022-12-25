@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 class FetchPlayers:
     def loadXML(self):
-        print("Grabbing XML information from API")
+        print("Grabbing Players XML information from API")
         #Inventory the list of URLs to go through
         urls = {
             'playerHighLevel':'https://s181-us.ogame.gameforge.com/api/players.xml',
@@ -86,6 +86,7 @@ class FetchPlayers:
             playersItems.append(playersDirectory)
         
         #remove the HighLevelXML before we iterate on each of them below
+        os.remove(XMLList['playerHighLevel'])
         XMLList.pop('playerHighLevel')
 
         #Loop through the rest of the items containing all individual player score and position items
@@ -107,6 +108,10 @@ class FetchPlayers:
                             positionName = XMLName + "Ships"
                             scoreDictUpdate = {positionName: child.attrib['ships']}
                             dict.update(scoreDictUpdate)
+        
+        # delete working files
+        for file in XMLList.values():
+            os.remove(file)
 
         #return all data
         return playersItems
@@ -204,7 +209,3 @@ class FetchPlayers:
         items = self.parseXML(XMLsToParse)
         # store players items in a csv file
         self.writeToDatabase(items, 'output/s131PlayersResults.csv')
-        # delete working files
-        for file in XMLsToParse.values():
-            os.remove(file)
-        
