@@ -1,21 +1,20 @@
-import psycopg
-from psycopg import sql
+import psycopg2
+from psycopg2 import sql
 from configparser import ConfigParser
 from databasesetup import DatabaseSetup
 
-class CreateSnapshots:
-    
+class CreateSnapshots: 
     def startSnapshots(self):
-        # load from web to update existing xml file
-        banana = DatabaseSetup()
+        # Create database connection 
+        dbConnection = DatabaseSetup()
 
         """ Connect to the PostgreSQL database server """
         conn = None
         try:
             # read connection parameters & connect to PostgreSQL server
-            params = banana.config()
+            params = dbConnection.config()
             print('Connecting to the PostgreSQL database...')
-            conn = psycopg.connect(**params)
+            conn = psycopg2.connect(**params)
             
             # create a cursor
             cur = conn.cursor()
@@ -50,7 +49,7 @@ class CreateSnapshots:
             # close the communication with the PostgreSQL
             cur.close()
 
-        except (Exception, psycopg.DatabaseError) as error:
+        except (Exception, psycopg2.DatabaseError) as error:
             print(error)
         finally:
             if conn is not None:

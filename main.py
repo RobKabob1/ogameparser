@@ -1,14 +1,17 @@
 from fetchplayers import FetchPlayers
-from fetchalliances import FetchAlliances
-from fetchplayerplanets import FetchPlayerPlanets
+#from fetchalliances import FetchAlliances
+#from fetchplayerplanets import FetchPlayerPlanets
 from databasesetup import DatabaseSetup
 from createSnapshots import CreateSnapshots
-import time
+import logging, time
 
-startTime = time.time()
+def main():
+    #Build Logger
+    startTime = time.time()
+    logging.basicConfig(filename='ogameparser.log', level=logging.INFO, format='%(asctime)s %(levelname)s:%(name)s:%(message)s')    
 
-if __name__ == '__main__':
-    #Test out database connectino
+    #Test out database connection
+    logging.info('Testing out database connections')
     bot = DatabaseSetup()
     bot.connect()
 
@@ -17,8 +20,8 @@ if __name__ == '__main__':
     bot = FetchPlayers()
     bot.startFetching()
     playersExecutionTime = (time.time() - playersTime)
-    print('Players execution time in seconds: ' + str(playersExecutionTime))
-    
+    logging.info('Players execution time in seconds: ' + str(playersExecutionTime))
+    """
     #Fetch Alliances
     alliancesTime = time.time()
     bot = FetchAlliances()
@@ -39,6 +42,9 @@ if __name__ == '__main__':
     bot.startSnapshots()
     planetsExecutionTime = (time.time() - snapshotsTime)
     print('Snapshot of Players and Alliances execution time in seconds: ' + str(planetsExecutionTime))
-
+    """
     executionTime = (time.time() - startTime)
-    print('Total fetch execution time in seconds: ' + str(executionTime))
+    logging.info('Finish running script. Total fetch execution time in seconds: ' + str(executionTime))
+
+if __name__ == '__main__':
+    main()

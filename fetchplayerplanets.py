@@ -1,10 +1,9 @@
 import csv, requests, os, time
 import xml.etree.ElementTree as ET
 from supabase import create_client, Client
-from datetime import date, datetime
+from datetime import datetime
 
 class FetchPlayerPlanets:
-
     def loadPlayerIDs(self):
         print("Grabbing player information from Supabase")
         #get playerIDs from Supabase

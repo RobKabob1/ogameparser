@@ -1,5 +1,5 @@
-import psycopg
-from psycopg import sql
+import psycopg2, logging
+from psycopg2 import sql
 from configparser import ConfigParser
 
 class DatabaseSetup:
@@ -25,8 +25,7 @@ class DatabaseSetup:
         try:
             # read connection parameters & connect to PostgreSQL server
             params = self.config()
-            print('Connecting to the PostgreSQL database...')
-            conn = psycopg.connect(**params)
+            conn = psycopg2.connect(**params)
             
             # create a cursor
             cur = conn.cursor()
@@ -40,7 +39,7 @@ class DatabaseSetup:
     
             #If a table isn't created in Supabase then create one. If it is, then don't worry about creating one.
             if tableinfo is None:
-                print(tableName + " table for client doesnt exist. Creating now.")
+                logging.info(tableName + " table for client doesnt exist. Creating now.")
                 cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;").format(sql.Identifier(tableName)))
@@ -76,7 +75,7 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerLifeformDiscoveriesScore\" int8;").format(sql.Identifier(tableName)))
                 conn.commit()
             else:
-                print(tableName + " table for client exists in database. Beginning next table check.")
+                logging.info(tableName + " table for client exists in database. Beginning next table check.")
 
             #Look through tables in database to see if there is already an alliances table created for this client
             tableName = 'alliances'
@@ -87,7 +86,7 @@ class DatabaseSetup:
     
             #If a table isn't created in Supabase then create one. If it is, then don't worry about creating one.
             if tableinfo is None:
-                print(tableName + " table for client doesnt exist. Creating now.")
+                logging.info(tableName + " table for client doesnt exist. Creating now.")
                 cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;").format(sql.Identifier(tableName)))
@@ -126,7 +125,7 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceLifeformDiscoveriesScore\" int8;").format(sql.Identifier(tableName)))
                 conn.commit()
             else:
-                print(tableName + " table for client exists in database. Beginning next table check.")
+                logging.info(tableName + " table for client exists in database. Beginning next table check.")
 
             #Look through tables in database to see if there is already a planets table created for this client
             tableName = 'planets'
@@ -137,7 +136,7 @@ class DatabaseSetup:
     
             #If a table isn't created in Supabase then create one. If it is, then don't worry about creating one.
             if tableinfo is None:
-                print(tableName + " table for client doesnt exist. Creating now.")
+                logging.info(tableName + " table for client doesnt exist. Creating now.")
                 cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;").format(sql.Identifier(tableName)))
@@ -172,7 +171,7 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"fetchDate\" timestamptz;").format(sql.Identifier(tableName)))
                 conn.commit()
             else:
-                print(tableName + " table for client exists in database. Removing rows and beginning next table check.")
+                logging.info(tableName + " table for client exists in database. Removing rows and beginning next table check.")
                 SQL = "DELETE FROM public.\"%s\"" % tableName
                 cur.execute(SQL)
                 conn.commit()
@@ -186,7 +185,7 @@ class DatabaseSetup:
     
             #If a table isn't created in Supabase then create one. If it is, then don't worry about creating one.
             if tableinfo is None:
-                print(tableName + " table for client doesnt exist. Creating now.")
+                logging.info(tableName + " table for client doesnt exist. Creating now.")
                 cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerID\" int8;").format(sql.Identifier(tableName)))
@@ -221,7 +220,7 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerLifeformDiscoveriesScore\" int8;").format(sql.Identifier(tableName)))
                 conn.commit()
             else:
-                print(tableName + " table for client exists in database. Beginning next table check.")
+                logging.info(tableName + " table for client exists in database. Beginning next table check.")
 
             #Look through tables in database to see if there is already an alliances table created for this client
             tableName = 'alliancesDaily'
@@ -232,7 +231,7 @@ class DatabaseSetup:
     
             #If a table isn't created in Supabase then create one. If it is, then don't worry about creating one.
             if tableinfo is None:
-                print(tableName + " table for client doesnt exist. Creating now.")
+                logging.info(tableName + " table for client doesnt exist. Creating now.")
                 cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceID\" int8;").format(sql.Identifier(tableName)))
@@ -270,7 +269,7 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"allianceLifeformDiscoveriesScore\" int8;").format(sql.Identifier(tableName)))
                 conn.commit()
             else:
-                print(tableName + " table for client exists in database. Beginning next table check.")
+                logging.info(tableName + " table for client exists in database. Beginning next table check.")
 
             #Look through tables in database to see if there is already a planets table created for this client
             tableName = 'planetsWeekly'
@@ -281,7 +280,7 @@ class DatabaseSetup:
     
             #If a table isn't created in Supabase then create one. If it is, then don't worry about creating one.
             if tableinfo is None:
-                print(tableName + " table for client doesnt exist. Creating now.")
+                logging.info(tableName + " table for client doesnt exist. Creating now.")
                 cur.execute(sql.SQL("CREATE TABLE {} ();").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"id\" int8 PRIMARY KEY;").format(sql.Identifier(tableName)))
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"playerID\" int8;").format(sql.Identifier(tableName)))
@@ -315,14 +314,14 @@ class DatabaseSetup:
                 cur.execute(sql.SQL("ALTER TABLE {} ADD COLUMN \"fetchDate\" timestamptz;").format(sql.Identifier(tableName)))
                 conn.commit()
             else:
-                print(tableName + " table for client exists in database. Beginning next table check.")
+                logging.info(tableName + " table for client exists in database. Beginning next table check.")
 
             # close the communication with the PostgreSQL
             cur.close()
 
-        except (Exception, psycopg.DatabaseError) as error:
-            print(error)
+        except (Exception, psycopg2.DatabaseError) as error:
+            logging.info(error)
         finally:
             if conn is not None:
                 conn.close()
-                print('Database connection closed.')
+                logging.info('Database connection closed.')

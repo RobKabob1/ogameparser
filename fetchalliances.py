@@ -1,7 +1,7 @@
 import csv, requests, os
 import xml.etree.ElementTree as ET
 from supabase import create_client, Client
-from datetime import date, datetime
+from datetime import datetime
 
 class FetchAlliances:
     def loadXML(self):
