@@ -1,11 +1,14 @@
-import csv, requests, os
+import csv, requests, os, logging
 import xml.etree.ElementTree as ET
-from supabase import create_client, Client
-from datetime import date, datetime
+#from supabase import create_client, Client
+import psycopg2
+from psycopg2 import sql
+from datetime import datetime
+from databasesetup import DatabaseSetup
 
 class FetchPlayers:
     def loadXML(self):
-        print("Grabbing Players XML information from API")
+        logging.info("Grabbing Players XML information from API")
         #Inventory the list of URLs to go through
         urls = {
             'playerHighLevel':'https://s181-us.ogame.gameforge.com/api/players.xml',
@@ -35,7 +38,7 @@ class FetchPlayers:
         return listOfXMLs
 
     def parseXML(self, XMLList):
-        print("Parsing XMLs")
+        logging.info("Parsing XMLs")
         #Inventorying high level items
         tree = ET.parse(XMLList.get('playerHighLevel'))
         root = tree.getroot()
@@ -117,7 +120,7 @@ class FetchPlayers:
         return playersItems
 
     def writeToDatabase(self, playersItems, filename):
-        print("Writing Data to Supabase")
+        logging.info("Writing Data to Supabase")
         fields = [
             'playerID', 
             'playerName', 
@@ -159,6 +162,75 @@ class FetchPlayers:
             writer.writerows(playersItems)
         """
         
+        # Write out data to Supabase
+        # Create database connection 
+        dbConnection = DatabaseSetup()
+
+        """ Connect to the PostgreSQL database server """
+        conn = None
+        try:
+            # read connection parameters & connect to PostgreSQL server
+            params = dbConnection.config()
+            logging.info('Connecting to the PostgreSQL database...')
+            conn = psycopg2.connect(**params)
+            
+            # create a cursor
+            cur = conn.cursor()
+            
+            #Copy data from the players table into the playersDaily table
+            """
+            SQL = "DELETE FROM public.\"playersDaily\""
+            cur.execute(SQL)
+            conn.commit()
+            """
+            main_list = []
+            for item in playersItems:
+                value = {
+                    'playerID': item['playerID'],
+                    'playerName': item['playerName'],
+                    'playerStatus': item['playerStatus'],
+                    'playerAlliance': item['playerAlliance'],
+                    'fetchDate': item['fetchDate'],
+                    'playerTotalPosition': item['playerTotalPosition'],
+                    'playerTotalScore': item['playerTotalScore'],
+                    'playerEconomyPosition': item['playerEconomyPosition'],
+                    'playerEconomyScore': item['playerEconomyScore'],
+                    'playerResearchPosition': item['playerResearchPosition'],
+                    'playerResearchScore': item['playerResearchScore'],
+                    'playerMilitaryHighLevelPosition': item['playerMilitaryHighLevelPosition'],
+                    'playerMilitaryHighLevelScore': item['playerMilitaryHighLevelScore'],
+                    'playerMilitaryHighLevelShips': item['playerMilitaryHighLevelShips'],
+                    'playerMilitaryLostPosition': item['playerMilitaryLostPosition'],
+                    'playerMilitaryLostScore': item['playerMilitaryLostScore'],
+                    'playerMilitaryBuiltPosition': item['playerMilitaryBuiltPosition'],
+                    'playerMilitaryBuiltScore': item['playerMilitaryBuiltScore'],
+                    'playerMilitaryDestroyedPosition': item['playerMilitaryDestroyedPosition'],
+                    'playerMilitaryDestroyedScore': item['playerMilitaryDestroyedScore'],
+                    'playerMilitaryHonorPosition': item['playerMilitaryHonorPosition'],
+                    'playerMilitaryHonorScore': item['playerMilitaryHonorScore'],
+                    'playerLifeformHighLevelPosition': item['playerLifeformHighLevelPosition'],
+                    'playerLifeformHighLevelScore': item['playerLifeformHighLevelScore'],
+                    'playerLifeformEconomyPosition': item['playerLifeformEconomyPosition'],
+                    'playerLifeformEconomyScore': item['playerLifeformEconomyScore'],
+                    'playerLifeformTechnologyPosition': item['playerLifeformTechnologyPosition'],
+                    'playerLifeformTechnologyScore': item['playerLifeformTechnologyScore'],
+                    'playerLifeformDiscoveriesPosition': item['playerLifeformDiscoveriesPosition'],
+                    'playerLifeformDiscoveriesScore': item['playerLifeformDiscoveriesScore']           
+                }
+                main_list.append(value)
+            logging.info(main_list)
+
+            # close the communication with the PostgreSQL
+            cur.close()
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            logging.info(error)
+        finally:
+            if conn is not None:
+                conn.close()
+                logging.info('Database connection closed.')
+
+        """
         #Write out data to Supabase
         tableName = 'players'
         supabase_url = "https://euoufmuefdkmihbmcyvp.supabase.co"
@@ -201,6 +273,7 @@ class FetchPlayers:
             main_list.append(value)
         
         data = supabase.table(tableName).insert(main_list).execute()  
+        """
         
     def startFetching(self):
         # load from web to update existing xml file
